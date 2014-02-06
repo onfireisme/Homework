@@ -1,0 +1,103 @@
+/*
+ * student:Wang Yan
+ * student ID:2013950450
+ */
+Question 1
+
+First of all ,we get some important parameters.
+The total bytes of R is 20,000*250= 5000,000 bytes
+5,000,000/4096=1220.703125=1221 blocks
+
+The total bytes of S is 4,000*250=1,000,000 bytes
+1,000,000/4096=244.140625=245 blocks
+The buffer blocks is 52.
+
+(a)
+(a1)simple nested loops join
+
+Depend on the formula,when R was outer relation
+Cost=1221+20,000*245=4901221
+
+When S was outer relation 
+Cost=245+4,000*1221=4884245
+Obvoiusly,we will take S as our outer relation
+
+Some ideas about the optimation of this method.
+As we know S.b is the pirmary key for S,which is in order and unique.
+As a result,when we took S as inner relation,we can stop when R.a=S.b.
+for each R.a 
+	for each S.b
+		if R.a=S.b
+		break;
+
+(a2)block nested loops jion
+
+Depend on the formula, when R was outer relation,As we want the minimus IO consuming and buffer
+blocks is 52.
+So we load 51 blocks of R,and left 1 blocks for S.
+Then the Cost= 1221+(1221/51)*245=1221+24*245=7101
+
+Similarly,when the S was outer relation
+Then the Cost= 245+(245/51)*1221=245+5*1221=6350
+So we take R as outer relation
+
+(a3)merge join
+
+As we know,the S is primary key,so we needn't to sort it.
+Then for R,we need to sort it,but we only have 52 blocks buffer,so we need use
+external sort-merge algorithms.
+Depend on its formula,Sorting Cost=1221*(2(log51(1221/52))+1)=1221*(2+1)=3663
+Then based on the merge join formula,the total Cost=3663+0+1221+245=5129;
+
+(b)
+
+As we know,the total Cost=(blocks of outer relation)+(tubles of outer relation)*(index search cost of
+inner relation);And both R and S has B+-tree indexes.
+Now,we want to calculate the search cost of inner relation.For a B+-tree, each node is a block.
+So we assume the degree value of B+ is n,then 64+8+(8+8)*(n-1)=4096bytes,then the n=251 
+
+(a little question,the leaf node flag means the pointers??)
+
+When R was the outer relation.
+The leaf nodes of R is 20,000/251=79.6=80 leaf nodes.As we know ,the non-leaf node can have up to 251 pointers.
+So we only have two level for this B+ tree,which means the search cost is 2.
+Total Cost=20000+20000*2=60000;
+
+When S was the outer relation.
+The leaf nodes of S is 4,000/251=15.9=16 leaf nodes
+Similarly,we only have two level for this B+ tree,the search cost is 2.
+Total Cost=4000+4000*2=12000
+
+So the minimus cost is 12000
+
+(c)
+We set the number of available buffer as M.
+
+For join by index nested loops.
+From his formula,M has no effect to it.
+
+Below is some personal opinions of it.
+Firstly,M must larger than 1,or we cann't have join operation.
+Secondly,if M equal to 2,then every time when we copy the root block of B+-tree,then we have to cover it
+by its leaf node,obviously, it will take extra operations.
+Finally,if M larger than 2, then every time ,we only need to copy the corresponding leaf node to buffer.
+So in fact,the buffer have few influence to it.
+
+For block nested loops jion.
+From its formula,it is manifest that the larger of the buffer,the better.
+However,when the buffer is larger than the ourer relation blocks,the Cost=the blocks of outer relaition+
+the blocks of inner relation and have no business with the buffer.
+
+Question 2
+For plan (a)
+The Cost of filter the S =100+20=120;
+The T2 has 2000 tuples and 20 blocks.
+Then we jion T2 and R by nested loops jion,and R as outer relation.
+By its formula,the Cost=100+10000*20=200100;
+
+For plan(b)it use index nested loop jion,and we can get form the quesion that the B+ tree is 3 levels.
+It means that the search cost of B+-tree is 3,and R as outer relation.
+By the formula, we can calculate the Cost=10000+10000*3=40000;
+
+It is clear that plan(b)is better;
+
