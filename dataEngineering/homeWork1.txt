@@ -2,6 +2,7 @@
  * student:Wang Yan
  * student ID:2013950450
  */
+
 Question 1
 
 First of all ,we get some important parameters.
