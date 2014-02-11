@@ -5,13 +5,16 @@
 
 Question 1
 
-First of all ,we get some important parameters.
+First of all ,we calculate some important parameters.
+the records of R and S are both 250 bytes,and one block is 4096 bytes,as 4096/250=16.3384=16,
+which means that each block could store 16 records
+
 The total bytes of R is 20,000*250= 5000,000 bytes
 5,000,000/4096=1220.703125=1221 blocks
 
 The total bytes of S is 4,000*250=1,000,000 bytes
 1,000,000/4096=244.140625=245 blocks
-The buffer blocks is 52.
+The buffer blocks is 53.
 
 (a)
 (a1)simple nested loops join
